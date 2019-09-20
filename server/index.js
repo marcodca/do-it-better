@@ -6,12 +6,12 @@ import path from "path";
 import cors from "cors";
 
 const port = process.env.PORT || 4000;
+const isProduction = process.env.NODE_ENV === "production";
 
 //db
-const url =
-  process.env.NODE_ENV === "production"
-    ? `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0-nvtf4.mongodb.net/test?retryWrites=true`
-    : "mongodb://127.0.0.1:27017/do-it-better-db";
+const url = isProduction
+  ? `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0-nvtf4.mongodb.net/test?retryWrites=true`
+  : "mongodb://127.0.0.1:27017/do-it-better-db";
 
 mongoose.connect(url, { useUnifiedTopology: true, useNewUrlParser: true });
 mongoose.connection.once("open", () => {
@@ -28,8 +28,7 @@ server.applyMiddleware({ app, path: "/graphql" });
 const httpServer = createServer(app);
 server.installSubscriptionHandlers(httpServer);
 
-
-if (process.env.NODE_ENV === "production") {
+if (isProduction) {
   app.use(express.static(path.join(__dirname, "../client/build")));
 
   app.get("*", function(req, res) {
