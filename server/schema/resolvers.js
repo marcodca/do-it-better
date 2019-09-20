@@ -1,4 +1,5 @@
 import { PubSub, withFilter } from "apollo-server";
+import Task from "../models/task";
 
 let tasksArr = [
   {
@@ -57,15 +58,21 @@ const resolvers = {
       const tasks = tasksArr.filter(task => task.userId == id);
       return { ...user, tasks };
     },
-    task: (root, { id }) => tasksArr.filter(task => task.id === id)[0]
+    task: (root, { id }) => {
+      return Task.findById(id)  
+      tasksArr.filter(task => task.id === id)[0];
+    }
   },
   Mutation: {
     createTask: (root, { id, title, userId, completed, created }) => {
+
+      const task = new Task({title, userId, completed, created : new Date().toDateString() })
       tasksArr.push({ id, title, userId, completed, created });
       pubsub.publish(USER_TASK_ADDED_OR_DELETED, {
         userTasksAddedOrDeleted: tasksArr.filter(task => task.userId == userId)
       });
-      return tasksArr[tasksArr.length - 1];
+    //   return tasksArr[tasksArr.length - 1];
+    return task.save()
     },
     deleteTask: (root, { id }) => {
       //reference to the task to be deleted
@@ -75,7 +82,9 @@ const resolvers = {
       //we make the publishing.
       //When db is implemented we should be more optimistic, publish before changing the persistent data.
       pubsub.publish(USER_TASK_ADDED_OR_DELETED, {
-        userTasksAddedOrDeleted: tasksArr.filter(task => task.userId == taskRef.userId)
+        userTasksAddedOrDeleted: tasksArr.filter(
+          task => task.userId == taskRef.userId
+        )
       });
       //if all went okay, return the deleted task
       return taskRef;
@@ -103,13 +112,13 @@ const resolvers = {
       subscribe: withFilter(
         () => pubsub.asyncIterator(USER_TASK_ADDED_OR_DELETED),
         (payload, variables) => {
-            const userId = payload.userTasksAddedOrDeleted.reduce((acc, elem) => {
-                if (acc !== 0 && acc !== acc) console.error('userId not matching')
-                acc = elem.userId;
-                return acc
-            }, 0)
-            return (userId == variables.id)
-          }
+          const userId = payload.userTasksAddedOrDeleted.reduce((acc, elem) => {
+            if (acc !== 0 && acc !== acc) console.error("userId not matching");
+            acc = elem.userId;
+            return acc;
+          }, 0);
+          return userId == variables.id;
+        }
       )
     }
   }
