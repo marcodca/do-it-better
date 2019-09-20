@@ -1,44 +1,8 @@
 import { PubSub, withFilter } from "apollo-server";
 import Task from "../models/task";
+import Users from '../models/user'
 
-let tasksArr = [
-  {
-    id: 1,
-    title: "Be happy",
-    userId: 3,
-    completed: false,
-    created: "long ago"
-  },
-  {
-    id: 2,
-    title: "be strong",
-    userId: 2,
-    completed: true,
-    created: "some time ago"
-  },
-  {
-    id: 3,
-    title: "find yourself",
-    userId: 1,
-    completed: false,
-    created: "a while ago"
-  },
-  { id: 4, title: "be kind", userId: 2, completed: false, created: "ages ago" },
-  {
-    id: 5,
-    title: "be great",
-    userId: 3,
-    completed: false,
-    created: "not long ago"
-  }
-];
-
-let usersArr = [
-  { id: 1, name: "Marco" },
-  { id: 2, name: "Rodrigo" },
-  { id: 3, name: "Felix" }
-];
-
+//Subscription stuff
 const pubsub = new PubSub();
 const TASK_COMPLETED_TOGGLED = "TASK_COMPLETED_TOGGLED";
 const USER_TASK_ADDED_OR_DELETED = "USER_TASK_ADDED_OR_DELETED";
@@ -46,21 +10,21 @@ const USER_TASK_ADDED_OR_DELETED = "USER_TASK_ADDED_OR_DELETED";
 const resolvers = {
   Query: {
     users: () => {
-      const users = usersArr.map(({ id, name }) => ({
+      const users = Users.map(({ id, name }) => ({
         id,
         name,
         tasks: Task.find({ userId: id })
       }));
       return users;
     },
-    user: (root, { id }) => {
-      const user = usersArr.filter(user => user.id == id)[0];
-      const tasks = tasksArr.filter(task => task.userId == id);
-      return { ...user, tasks };
+    user: async (root, { id }) => {
+      const [user] = Users.filter(user => user.id == id);
+      const  tasks = await Task.find({});
+      const userTasks = tasks.filter(task => task.userId == id);
+      return { ...user, tasks: userTasks };
     },
     task: (root, { id }) => {
       return Task.findById(id);
-      tasksArr.filter(task => task.id === id)[0];
     }
   },
   Mutation: {
@@ -72,37 +36,27 @@ const resolvers = {
         created: new Date().toDateString()
       });
       const tasks = await Task.find({});
-      //   tasksArr.push({ id, title, userId, completed, created });
-
       pubsub.publish(USER_TASK_ADDED_OR_DELETED, {
         userTasksAddedOrDeleted: [
           ...tasks.filter(task => task.userId == userId),
           task
         ]
       });
-      //   return tasksArr[tasksArr.length - 1];
       return task.save();
     },
     deleteTask: async (root, { id }) => {
-      //reference to the task to be deleted
+      //We fetch all tasks   
       const tasks = await Task.find({});
-      const [{ userId }] = tasks.filter(task => task.id == id);
-      //   const [taskRef] = tasksArr.filter(task => task.id == id);
-      //we modify the data
-      //   tasksArr = tasksArr.filter(task => task.id != id);
-      //we make the publishing.
-      //When db is implemented we should be more optimistic, publish before changing the persistent data.
+      //Optimistic approach, we publish before saving changes to db   
       pubsub.publish(USER_TASK_ADDED_OR_DELETED, {
         userTasksAddedOrDeleted: tasks.filter(task => task.userId == userId && task.id != id )
       });
-      //if all went okay, return the deleted task
+      //We finally make the changes, and return the deleted task
       return Task.findByIdAndDelete(id);
     },
     toggleTaskCompleted: async (root, { id }) => {
-    //   const taskRef = tasksArr.filter(task => task.id == id)[0];
       let task = await Task.findById(id);
       task.completed = !task.completed;
-    //   taskRef.completed = !taskRef.completed;
       pubsub.publish(TASK_COMPLETED_TOGGLED, {
         taskCompletedToggled: task
       });
