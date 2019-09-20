@@ -10,7 +10,7 @@ const url =
     ? `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0-nvtf4.mongodb.net/test?retryWrites=true`
     : "mongodb://127.0.0.1:27017/do-it-better-db";
 
-mongoose.connect(url);
+mongoose.connect(url, { useUnifiedTopology: true, useNewUrlParser: true });
 mongoose.connection.once("open", () => {
   console.log("connected to database");
 });

@@ -49,7 +49,7 @@ const resolvers = {
       const users = usersArr.map(({ id, name }) => ({
         id,
         name,
-        tasks: tasksArr.filter(task => task.userId == id)
+        tasks: Task.find({ userId: id })
       }));
       return users;
     },
@@ -59,35 +59,44 @@ const resolvers = {
       return { ...user, tasks };
     },
     task: (root, { id }) => {
-      return Task.findById(id)  
+      return Task.findById(id);
       tasksArr.filter(task => task.id === id)[0];
     }
   },
   Mutation: {
-    createTask: (root, { id, title, userId, completed, created }) => {
-
-      const task = new Task({title, userId, completed, created : new Date().toDateString() })
-      tasksArr.push({ id, title, userId, completed, created });
-      pubsub.publish(USER_TASK_ADDED_OR_DELETED, {
-        userTasksAddedOrDeleted: tasksArr.filter(task => task.userId == userId)
+    createTask: async (root, { title, userId }) => {
+      const task = new Task({
+        title,
+        userId,
+        completed: false,
+        created: new Date().toDateString()
       });
-    //   return tasksArr[tasksArr.length - 1];
-    return task.save()
+      const tasks = await Task.find({});
+      //   tasksArr.push({ id, title, userId, completed, created });
+
+      pubsub.publish(USER_TASK_ADDED_OR_DELETED, {
+        userTasksAddedOrDeleted: [
+          ...tasks.filter(task => task.userId == userId),
+          task
+        ]
+      });
+      //   return tasksArr[tasksArr.length - 1];
+      return task.save();
     },
-    deleteTask: (root, { id }) => {
+    deleteTask: async (root, { id }) => {
       //reference to the task to be deleted
-      const [taskRef] = tasksArr.filter(task => task.id == id);
+      const tasks = await Task.find({});
+      const [{ userId }] = tasks.filter(task => task.id == id);
+      //   const [taskRef] = tasksArr.filter(task => task.id == id);
       //we modify the data
-      tasksArr = tasksArr.filter(task => task.id != id);
+      //   tasksArr = tasksArr.filter(task => task.id != id);
       //we make the publishing.
       //When db is implemented we should be more optimistic, publish before changing the persistent data.
       pubsub.publish(USER_TASK_ADDED_OR_DELETED, {
-        userTasksAddedOrDeleted: tasksArr.filter(
-          task => task.userId == taskRef.userId
-        )
+        userTasksAddedOrDeleted: tasks.filter(task => task.userId == userId && task.id != id )
       });
       //if all went okay, return the deleted task
-      return taskRef;
+      return Task.findByIdAndDelete(id);
     },
     toggleTaskCompleted: (root, { id }) => {
       const taskRef = tasksArr.filter(task => task.id == id)[0];
@@ -112,6 +121,7 @@ const resolvers = {
       subscribe: withFilter(
         () => pubsub.asyncIterator(USER_TASK_ADDED_OR_DELETED),
         (payload, variables) => {
+            console.log('payload', payload, 'vars', variables);
           const userId = payload.userTasksAddedOrDeleted.reduce((acc, elem) => {
             if (acc !== 0 && acc !== acc) console.error("userId not matching");
             acc = elem.userId;
