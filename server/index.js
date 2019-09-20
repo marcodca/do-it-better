@@ -10,7 +10,7 @@ const isProduction = process.env.NODE_ENV === "production";
 
 //db
 const url = isProduction
-  ? `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0-nvtf4.mongodb.net/test?retryWrites=true`
+  ? `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0-dm0x6.mongodb.net/test?retryWrites=true&w=majority`
   : "mongodb://127.0.0.1:27017/do-it-better-db";
 
 mongoose.connect(url, { useUnifiedTopology: true, useNewUrlParser: true });
