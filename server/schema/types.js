@@ -1,0 +1,26 @@
+import { gql } from 'apollo-server-express';
+
+const typeDefs = gql`
+    type Query {
+        users: [User]
+        user(id: ID!): User
+        task(id: ID!): Task
+    }
+    type User {
+        id: ID!
+        name: String!
+        tasks: [Task]
+    }
+    type Task {
+        id: ID!
+        title: String!
+        userId: Int!
+        completed: Boolean!
+        created: String!
+    }
+    type Mutation {
+        createTask(id: ID!, title: String!, userId: Int!, completed: Boolean!, created: String!): Task
+    }
+`
+
+export default typeDefs
