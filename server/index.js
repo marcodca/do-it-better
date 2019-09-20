@@ -1,9 +1,9 @@
-import express from "express";
-import { createServer } from "http";
-import mongoose from "mongoose";
-import server from "./schema";
-import path from "path";
-import cors from "cors";
+const express = require("express");
+const {createServer} = require("http");
+const mongoose = require('mongoose');
+const path = require("path");
+const cors = require("cors")
+const server = require("./schema");
 
 const port = process.env.PORT || 4000;
 const isProduction = process.env.NODE_ENV === "production";

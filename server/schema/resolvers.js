@@ -1,6 +1,6 @@
-import { PubSub, withFilter } from "apollo-server";
-import Task from "../models/task";
-import Users from '../models/user'
+const { PubSub, withFilter } = require("apollo-server");
+const Task = require("../models/task");
+const Users = require('../models/user'); 
 
 //Subscription stuff
 const pubsub = new PubSub();
@@ -89,4 +89,4 @@ const resolvers = {
   }
 };
 
-export default resolvers;
+module.exports = resolvers;

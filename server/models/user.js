@@ -6,4 +6,4 @@ const users = [
     { id: 3, name: "Felix" }
   ];
 
-  export default users;
+module.exports = users;
