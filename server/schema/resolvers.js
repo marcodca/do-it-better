@@ -98,13 +98,15 @@ const resolvers = {
       //if all went okay, return the deleted task
       return Task.findByIdAndDelete(id);
     },
-    toggleTaskCompleted: (root, { id }) => {
-      const taskRef = tasksArr.filter(task => task.id == id)[0];
-      taskRef.completed = !taskRef.completed;
+    toggleTaskCompleted: async (root, { id }) => {
+    //   const taskRef = tasksArr.filter(task => task.id == id)[0];
+      let task = await Task.findById(id);
+      task.completed = !task.completed;
+    //   taskRef.completed = !taskRef.completed;
       pubsub.publish(TASK_COMPLETED_TOGGLED, {
-        taskCompletedToggled: taskRef
+        taskCompletedToggled: task
       });
-      return taskRef;
+      return Task.findByIdAndUpdate(id, task, { new : true });
     }
   },
   //Note on the filtering subscriptions: notice how the withFilter function works, it takes 2 functions as arguments, the first is gonna be the asyncIterator, and the second one a function that must return a boolean. This last one is the one charged of the filtering, if it returns true the subscription will work, otherwise no. This callback has access to both, payload (whats coming from the pubsub.publish()) and also the variables on the subscription query.
@@ -121,7 +123,6 @@ const resolvers = {
       subscribe: withFilter(
         () => pubsub.asyncIterator(USER_TASK_ADDED_OR_DELETED),
         (payload, variables) => {
-            console.log('payload', payload, 'vars', variables);
           const userId = payload.userTasksAddedOrDeleted.reduce((acc, elem) => {
             if (acc !== 0 && acc !== acc) console.error("userId not matching");
             acc = elem.userId;
