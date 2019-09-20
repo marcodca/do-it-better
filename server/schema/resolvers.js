@@ -40,6 +40,7 @@ let usersArr = [
 
 const pubsub = new PubSub();
 const TASK_COMPLETED_TOGGLED = "TASK_COMPLETED_TOGGLED";
+const USER_TASK_ADDED_OR_DELETED = "USER_TASK_ADDED_OR_DELETED";
 
 const resolvers = {
   Query: {
@@ -64,8 +65,18 @@ const resolvers = {
       return tasksArr[tasksArr.length - 1];
     },
     deleteTask: (root, { id }) => {
-      tasksArr = tasksArr.filter(task => task.id !== id);
-      return true;
+      //reference to the task to be deleted
+      const [taskRef] = tasksArr.filter(task => task.id == id);
+      console.log(taskRef)
+      //we modify the data
+      tasksArr = tasksArr.filter(task => task.id != id);
+      //we make the publishing
+      //MAKE IT MORE EFFICIENT HERE!  
+      pubsub.publish(USER_TASK_ADDED_OR_DELETED, {
+        userTasksAddedOrDeleted: tasksArr.filter(task => task.userId == taskRef.userId)
+      });
+      //if all went okay, return the deleted task
+      return taskRef;
     },
     toggleTaskCompleted: (root, { id }) => {
       const taskRef = tasksArr.filter(task => task.id == id)[0];
@@ -82,8 +93,21 @@ const resolvers = {
       subscribe: withFilter(
         () => pubsub.asyncIterator(TASK_COMPLETED_TOGGLED),
         (payload, variables) => {
-          return (payload.taskCompletedToggled.id == variables.id);
+          return payload.taskCompletedToggled.id == variables.id;
         }
+      )
+    },
+    userTasksAddedOrDeleted: {
+      subscribe: withFilter(
+        () => pubsub.asyncIterator(USER_TASK_ADDED_OR_DELETED),
+        (payload, variables) => {
+            const userId = payload.userTasksAddedOrDeleted.reduce((acc, elem) => {
+                if (acc !== 0 || acc !== acc) console.error('userId not matching')
+                acc = elem.userId;
+                return acc
+            }, 0)
+            return (userId == variables.id)
+          }
       )
     }
   }
