@@ -62,16 +62,18 @@ const resolvers = {
   Mutation: {
     createTask: (root, { id, title, userId, completed, created }) => {
       tasksArr.push({ id, title, userId, completed, created });
+      pubsub.publish(USER_TASK_ADDED_OR_DELETED, {
+        userTasksAddedOrDeleted: tasksArr.filter(task => task.userId == userId)
+      });
       return tasksArr[tasksArr.length - 1];
     },
     deleteTask: (root, { id }) => {
       //reference to the task to be deleted
       const [taskRef] = tasksArr.filter(task => task.id == id);
-      console.log(taskRef)
       //we modify the data
       tasksArr = tasksArr.filter(task => task.id != id);
-      //we make the publishing
-      //MAKE IT MORE EFFICIENT HERE!  
+      //we make the publishing.
+      //When db is implemented we should be more optimistic, publish before changing the persistent data.
       pubsub.publish(USER_TASK_ADDED_OR_DELETED, {
         userTasksAddedOrDeleted: tasksArr.filter(task => task.userId == taskRef.userId)
       });
@@ -102,7 +104,7 @@ const resolvers = {
         () => pubsub.asyncIterator(USER_TASK_ADDED_OR_DELETED),
         (payload, variables) => {
             const userId = payload.userTasksAddedOrDeleted.reduce((acc, elem) => {
-                if (acc !== 0 || acc !== acc) console.error('userId not matching')
+                if (acc !== 0 && acc !== acc) console.error('userId not matching')
                 acc = elem.userId;
                 return acc
             }, 0)
