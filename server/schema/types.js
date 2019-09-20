@@ -3,8 +3,8 @@ import { gql } from 'apollo-server-express';
 const typeDefs = gql`
     type Query {
         users: [User]
-        user(id: ID!): User
-        task(id: ID!): Task
+        user(id: ID!): User!
+        task(id: ID!): Task!
     }
     type User {
         id: ID!
@@ -22,6 +22,10 @@ const typeDefs = gql`
         createTask(id: ID!, title: String!, userId: Int!, completed: Boolean!, created: String!): Task
         deleteTask(id: ID!): Boolean
         toggleTaskCompleted(id: ID!): Task
+    }
+    type Subscription {
+        taskCompletedToggled(id: ID!): Task
+        
     }
 `
 

@@ -1,3 +1,5 @@
+import { PubSub, withFilter } from "apollo-server";
+
 let tasksArr = [
   {
     id: 1,
@@ -36,20 +38,23 @@ let usersArr = [
   { id: 3, name: "Felix" }
 ];
 
+const pubsub = new PubSub();
+const TASK_COMPLETED_TOGGLED = "TASK_COMPLETED_TOGGLED";
+
 const resolvers = {
   Query: {
     users: () => {
-        const users = usersArr.map( ({id, name}) => ({
-            id,
-            name,
-            tasks : tasksArr.filter(task => task.userId == id) 
-        }))
-        return users
+      const users = usersArr.map(({ id, name }) => ({
+        id,
+        name,
+        tasks: tasksArr.filter(task => task.userId == id)
+      }));
+      return users;
     },
     user: (root, { id }) => {
-      const user =  usersArr.filter(user => user.id == id)[0];
-      const tasks = tasksArr.filter(task => task.userId == id) 
-      return {...user, tasks}
+      const user = usersArr.filter(user => user.id == id)[0];
+      const tasks = tasksArr.filter(task => task.userId == id);
+      return { ...user, tasks };
     },
     task: (root, { id }) => tasksArr.filter(task => task.id === id)[0]
   },
@@ -65,7 +70,21 @@ const resolvers = {
     toggleTaskCompleted: (root, { id }) => {
       const taskRef = tasksArr.filter(task => task.id == id)[0];
       taskRef.completed = !taskRef.completed;
+      pubsub.publish(TASK_COMPLETED_TOGGLED, {
+        taskCompletedToggled: taskRef
+      });
       return taskRef;
+    }
+  },
+  //Note on the filtering subscriptions: notice how the withFilter function works, it takes 2 functions as arguments, the first is gonna be the asyncIterator, and the second one a function that must return a boolean. This last one is the one charged of the filtering, if it returns true the subscription will work, otherwise no. This callback has access to both, payload (whats coming from the pubsub.publish()) and also the variables on the subscription query.
+  Subscription: {
+    taskCompletedToggled: {
+      subscribe: withFilter(
+        () => pubsub.asyncIterator(TASK_COMPLETED_TOGGLED),
+        (payload, variables) => {
+          return (payload.taskCompletedToggled.id == variables.id);
+        }
+      )
     }
   }
 };
