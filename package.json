@@ -8,7 +8,8 @@
     "clean": "rm -rf build && mkdir build",
     "build-babel": "babel -d ./build ./server -s",
     "build": "npm run clean && npm run build-babel",
-    "start": "npm run build && node ./build/server/index.js"
+    "start": "npm run build && node ./build/server/index.js",
+    "heroku-postbuild": "cd client && npm install && npm install --only=dev --no-shrinkwrap && npm run build"
   },
   "author": "Marco de Cara",
   "license": "ISC",
