@@ -18,7 +18,7 @@ const uri =
 
 
     const httpLink = new HttpLink({
-      uri: `http:${uri}`,
+      uri: `https:${uri}`,
     });
     
     const wsLink = new WebSocketLink({
