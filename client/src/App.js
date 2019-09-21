@@ -1,24 +1,49 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import React from "react";
+import gql from "graphql-tag";
+import { useQuery } from "@apollo/react-hooks";
+
+const GET_USERS = gql`
+  query {
+    users {
+      id
+      name
+      tasks {
+        id
+        title
+        userId
+        completed
+        created
+      }
+    }
+  }
+`;
 
 function App() {
+  const { data, loading } = useQuery(GET_USERS);
+  if (!data) {
+    return null;
+  }
+
+  console.log(data)
+
+  if (loading) {
+    return <span>Loading ...</span>;
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      {" "}
+      {data.users.map(user => (
+        <div>
+          <h3>{user.name}</h3>
+          <h4>Tasks</h4>
+          <ul>
+            {user.tasks.map(task => (
+              <li>{task.title}</li>
+            ))}
+          </ul>
+        </div>
+      ))}
     </div>
   );
 }
