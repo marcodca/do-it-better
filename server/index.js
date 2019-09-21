@@ -1,9 +1,11 @@
 const express = require("express");
-const {createServer} = require("http");
-const mongoose = require('mongoose');
+const { createServer } = require("http");
+const mongoose = require("mongoose");
 const path = require("path");
-const cors = require("cors")
+const cors = require("cors");
 const server = require("./schema");
+const User = require("./models/user");
+const Task = require("./models/task");
 
 const port = process.env.PORT || 4000;
 const isProduction = process.env.NODE_ENV === "production";
@@ -28,6 +30,18 @@ server.applyMiddleware({ app, path: "/graphql" });
 const httpServer = createServer(app);
 server.installSubscriptionHandlers(httpServer);
 
+//Endpoint for fetching all data
+//is just a tailor made object containing all users and their tasks.
+app.get("/data", async (req, res) => {
+  const tasks = await Task.find({});
+  const users = [...User].map(user => {
+    user.tasks = tasks.filter(task => task.userId === user.id);
+    return user;
+  });
+  res.send(users);
+});
+
+//
 if (isProduction) {
   app.use(express.static(path.join(__dirname, "../client/build")));
 
