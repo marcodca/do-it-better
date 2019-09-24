@@ -69,3 +69,12 @@ subscription($id: ID!){
   }
 }
 `
+
+export const CREATE_USER = gql`
+  mutation($name: String){
+  createUser(name: $name){
+    id
+    name
+  }
+}
+`
