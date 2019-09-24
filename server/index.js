@@ -44,7 +44,7 @@ app.get("/data", async (req, res) => {
 
 //
 if (isProduction) {
-  // app.use(express.static(path.join(__dirname, "../client/build")));
+  app.use(express.static(path.join(__dirname, "../client/build")));
 
   app.get("*", function(req, res) {
     res.sendFile(path.join(__dirname, "client/build", "index.html"));
