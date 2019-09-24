@@ -14,12 +14,13 @@ const typeDefs = gql`
     type Task {
         id: ID!
         title: String!
-        userId: Int!
+        userId: String!
         completed: Boolean!
-        created: String!
+        created: String
     }
     type Mutation {
         createTask(id: ID, title: String!, userId: ID!, completed: Boolean, created: String): Task
+        createUser(id: ID, name: String): User
         deleteTask(id: ID!): Task
         toggleTaskCompleted(id: ID!): Task
     }

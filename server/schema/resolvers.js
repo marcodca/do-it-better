@@ -1,6 +1,6 @@
 const { PubSub, withFilter } = require("apollo-server");
 const Task = require("../models/task");
-const Users = require('../models/user'); 
+const User = require("../models/user");
 
 //Subscription stuff
 const pubsub = new PubSub();
@@ -9,19 +9,21 @@ const USER_TASK_ADDED_OR_DELETED = "USER_TASK_ADDED_OR_DELETED";
 
 const resolvers = {
   Query: {
-    users: () => {
-      const users = Users.map(({ id, name }) => ({
+    users: async () => {
+      const users = await User.find({});
+      const fullUsers = users.map(({ id, name }) => ({
         id,
         name,
         tasks: Task.find({ userId: id })
       }));
-      return users;
+      return fullUsers;
     },
     user: async (root, { id }) => {
-      const [user] = Users.filter(user => user.id == id);
-      const  tasks = await Task.find({});
+      const [user] = await User.find({ _id: id });
+      const tasks = await Task.find({});
       const userTasks = tasks.filter(task => task.userId == id);
-      return { ...user, tasks: userTasks };
+
+      return { name: user.name, id, tasks: userTasks };
     },
     task: (root, { id }) => {
       return Task.findById(id);
@@ -32,8 +34,7 @@ const resolvers = {
       const task = new Task({
         title,
         userId,
-        completed: false,
-        created: new Date().toDateString()
+        completed: false
       });
       const tasks = await Task.find({});
       pubsub.publish(USER_TASK_ADDED_OR_DELETED, {
@@ -44,14 +45,22 @@ const resolvers = {
       });
       return task.save();
     },
+    createUser: (root, { name }) => {
+      const user = new User({
+        name
+      });
+      return user.save()
+    },
     deleteTask: async (root, { id }) => {
-      //We fetch all tasks   
+      //We fetch all tasks
       const tasks = await Task.find({});
       //get get a reference to the userId
-      const [{ userId }] = tasks.filter( task => task.id == id);
-      //Optimistic approach, we publish before saving changes to db   
+      const [{ userId }] = tasks.filter(task => task.id == id);
+      //Optimistic approach, we publish before saving changes to db
       pubsub.publish(USER_TASK_ADDED_OR_DELETED, {
-        userTasksAddedOrDeleted: tasks.filter(task => task.userId == userId && task.id != id )
+        userTasksAddedOrDeleted: tasks.filter(
+          task => task.userId == userId && task.id != id
+        )
       });
       //We finally make the changes, and return the deleted task
       return Task.findByIdAndDelete(id);
@@ -62,7 +71,7 @@ const resolvers = {
       pubsub.publish(TASK_COMPLETED_TOGGLED, {
         taskCompletedToggled: task
       });
-      return Task.findByIdAndUpdate(id, task, { new : true });
+      return Task.findByIdAndUpdate(id, task, { new: true });
     }
   },
   //Note on the filtering subscriptions: notice how the withFilter function works, it takes 2 functions as arguments, the first is gonna be the asyncIterator, and the second one a function that must return a boolean. This last one is the one charged of the filtering, if it returns true the subscription will work, otherwise no. This callback has access to both, payload (whats coming from the pubsub.publish()) and also the variables on the subscription query.

@@ -1,9 +1,8 @@
-//There's no actual need to create a collection for the users, since there can't be added or deleted users in the app, so let's just use an array as a dummy db.
+const mongoose = require('mongoose') ;
+const { Schema } = mongoose;
 
-const users = [
-    { id: 1, name: "Marco" },
-    { id: 2, name: "Rodrigo" },
-    { id: 3, name: "Felix" }
-  ];
+const userSchema = new Schema({
+    name: { type: String, lowercase: true, trim: true },
+});
 
-module.exports = users;
+module.exports = mongoose.model('User', userSchema);
