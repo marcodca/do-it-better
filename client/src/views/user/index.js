@@ -1,29 +1,37 @@
-import React from "react";
+import React, { useEffect } from "react";
 import TaskDetails from "./TaskDetails";
 import CreateTaskForm from "./CreateTaskForm";
-import { useQuery, useSubscription } from "@apollo/react-hooks";
+import { useQuery } from "@apollo/react-hooks";
 import { GET_USER_TASKS, SUBSCRIBE_TO_USER_TASKS } from "../../queries";
 
 const User = props => {
   const { id } = props.match.params;
 
-  const { loading, error, data } = useQuery(GET_USER_TASKS, {
+  const { loading, error, data, subscribeToMore } = useQuery(GET_USER_TASKS, {
     variables: { id }
   });
-  const { data: subscribedData } = useSubscription(SUBSCRIBE_TO_USER_TASKS, {
-    variables: { id }
+
+  useEffect(() => {
+    subscribeToMore(
+      {
+        document: SUBSCRIBE_TO_USER_TASKS,
+        variables: { id },
+        updateQuery: (prev, { subscriptionData }) => {
+          if (!subscriptionData.data) return prev;
+          const newTasks = subscriptionData.data.userTasksAddedOrDeleted;
+          return { user: { ...prev.user, tasks: newTasks } };
+        }
+      },
+      []
+    );
   });
 
   if (loading) return <p>Loading...</p>;
   if (error) return `Error! ${error}`;
 
-  const tasks = subscribedData
-    ? subscribedData.userTasksAddedOrDeleted
-    : data.user.tasks;
-
   return (
     <div>
-      {tasks.map(task => {
+      {data.user.tasks.map(task => {
         const { id, title, completed, created } = task;
         return (
           <TaskDetails
@@ -35,7 +43,7 @@ const User = props => {
           />
         );
       })}
-      <CreateTaskForm userId={id}/>
+      <CreateTaskForm userId={id} />
     </div>
   );
 };
