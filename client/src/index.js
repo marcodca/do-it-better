@@ -21,7 +21,7 @@ const httpLink = new HttpLink({
 });
 
 const wsLink = new WebSocketLink({
-  uri: isProduction ? `ws:${uri}` : `ws:${uri}`,
+  uri: isProduction ? `wss:${uri}` : `ws:${uri}`,
   options: {
     reconnect: true
   }
