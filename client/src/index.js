@@ -14,14 +14,16 @@ import * as serviceWorker from "./serviceWorker";
 
 const isProduction = process.env.NODE_ENV === "production";
 
-const uri = isProduction ? "/graphql" : "//localhost:4000/graphql";
+const uri = isProduction ? "/graphql" : "//localhost:4000";
 
 const httpLink = new HttpLink({
-  uri: isProduction ? `/graphql` : `http://localhost:4000/graphql`
+  uri: isProduction ? "/graphql" : `http://localhost:4000/graphql`
 });
 
 const wsLink = new WebSocketLink({
-  uri: isProduction ? `wss:${window.location.host}` : `ws://localhost:4000`,
+  uri: isProduction
+    ? `wss://${window.location.host}/graphql`
+    : `ws://localhost:4000/graphql`,
   options: {
     reconnect: true
   }
