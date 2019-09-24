@@ -28,6 +28,7 @@ app.use(cors());
 //graphql
 server.applyMiddleware({ app, path: "/graphql" });
 const httpServer = createServer(app);
+
 server.installSubscriptionHandlers(httpServer);
 
 //Endpoint for fetching all data
