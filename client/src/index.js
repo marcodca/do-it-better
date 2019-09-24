@@ -17,11 +17,11 @@ const isProduction = process.env.NODE_ENV === "production";
 const uri = isProduction ? "/graphql" : "//localhost:4000/graphql";
 
 const httpLink = new HttpLink({
-  uri: isProduction ? `https:${uri}` : `http:${uri}`
+  uri: isProduction ? `/graphql` : `http://localhost:4000/graphql`
 });
 
 const wsLink = new WebSocketLink({
-  uri: isProduction ? `wss:${uri}` : `ws:${uri}`,
+  uri: isProduction ? `wss:${window.location.host}` : `ws://localhost:4000`,
   options: {
     reconnect: true
   }
