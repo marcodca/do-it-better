@@ -47,6 +47,8 @@ const resolvers = {
     deleteTask: async (root, { id }) => {
       //We fetch all tasks   
       const tasks = await Task.find({});
+      //get get a reference to the userId
+      const [{ userId }] = tasks.filter( task => task.id == id);
       //Optimistic approach, we publish before saving changes to db   
       pubsub.publish(USER_TASK_ADDED_OR_DELETED, {
         userTasksAddedOrDeleted: tasks.filter(task => task.userId == userId && task.id != id )

@@ -1,6 +1,7 @@
 import React from 'react';
 import { useQuery } from "@apollo/react-hooks";
 import { GET_USERS } from '../../queries';
+import { Link } from 'react-router-dom';
 
 
 const Home = () => {
@@ -18,7 +19,7 @@ const Home = () => {
         {" "}
         {data.users.map(user => (
           <div>
-            <h3>{user.name}</h3>
+            <Link to={`/user/${user.id}`}><h3>{user.name}</h3></Link>
           </div>
         ))}
       </div>
