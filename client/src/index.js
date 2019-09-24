@@ -11,11 +11,9 @@ import { InMemoryCache } from "apollo-cache-inmemory";
 import * as serviceWorker from "./serviceWorker";
 import { BrowserRouter as Router } from "react-router-dom";
 
-//Set the corresponding uri for production and development
+//Set the corresponding uri 
 
 const isProduction = process.env.NODE_ENV === "production";
-
-const uri = isProduction ? "/graphql" : "//localhost:4000";
 
 const httpLink = new HttpLink({
   uri: isProduction ? "/graphql" : `http://localhost:4000/graphql`
