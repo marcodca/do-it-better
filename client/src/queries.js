@@ -52,3 +52,20 @@ export const CREATE_TASK = gql`
   }
 }
 `
+export const TOGGLE_TASK_COMPLETED = gql`
+  mutation($id: ID!){
+  toggleTaskCompleted(id: $id){
+    completed
+    title
+  }
+}
+`
+
+export const SUBSCRIBE_TASK_COMPLETED_TOGGLED = gql`
+subscription($id: ID!){
+  taskCompletedToggled(id: $id){
+    title
+    completed
+  }
+}
+`
