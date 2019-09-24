@@ -1,15 +1,17 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { CREATE_USER } from "../../queries";
 import { useMutation } from "@apollo/react-hooks";
+import styled from 'styled-components';
 
-const Input = ({ users, refetch }) => {
+const UserInput = ({ users, refetch }) => {
   const [inputValue, setInputValue] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const [createUser] = useMutation(CREATE_USER);
 
+  const ref = useRef()
+
   const handleInputChange = e => {
-    let { value } = e.target;
-    value = value.toLowerCase().trim();
+    const value  = e.target.value.toLowerCase().trim();
     setInputValue(value);
 
     //Return if the input is empty
@@ -33,25 +35,47 @@ const Input = ({ users, refetch }) => {
     });
   };
 
-  const handleFormSubmit = e => {
+  const createNewUser = e => {
     e.preventDefault();
     createUser({ variables: { name: inputValue } });
     setInputValue("");
     refetch();
   };
+
+  const Input = styled.input`
+    min-height: 100px;
+    width: 40%;
+    min-width: 300px;
+    font-size: 5rem;
+    background-color: #eab84b;
+    border: 0;
+    text-transform: uppercase;
+    &:focus {
+      border: 0;
+      outline-color: transparent;
+    }
+  `
+
+  useEffect(()=>{
+    ref.current.focus();
+  })
+
   return (
-    <form onSubmit={handleFormSubmit}>
-      <input type={"text"} value={inputValue} onChange={handleInputChange} />
+    <>
+      <Input type={"text"} value={inputValue} onChange={handleInputChange} ref={ref} />
       <ul>
         {suggestions.map(user => (
           <li key={user.id}>{user.name}</li>
         ))}
       </ul>
       {inputValue.length >= 3 && suggestions.length === 0 && (
-        <button>Create new user</button>
+        <div>
+          There's no user {inputValue}.{" "}
+          <a onClick={createNewUser} href={'#'}>Create new user.</a>
+        </div>
       )}
-    </form>
+    </>
   );
 };
 
-export default Input;
+export default UserInput;
