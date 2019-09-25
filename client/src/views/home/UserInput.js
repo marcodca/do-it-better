@@ -63,6 +63,7 @@ const UserInput = ({ users, refetch }) => {
     text-transform: uppercase;
     text-align: center;
     justify-self: end;
+    box-shadow: 2px 3px 13px -2px rgba(0,0,0,0.75);
     &:focus {
       border: 0;
       outline-color: transparent;
@@ -74,7 +75,7 @@ const UserInput = ({ users, refetch }) => {
   `;
 
   const ResultsContainer = styled.div`
-    min-height: 290px;
+    min-height: 310px;
     width: 40%;
   `;
 
@@ -95,6 +96,19 @@ const UserInput = ({ users, refetch }) => {
     text-orientation: upright;
     cursor: pointer;
   `;
+
+  const CreateNewUserMsj = styled.div`
+    font-size: 25px;
+    margin-top: 10%;
+    line-height: 30px;
+    a {
+      display: inline-block;
+      margin-top: 10px;
+      color: #fff;
+      background: #000;
+      padding: 3px;
+    }
+  `
 
   useEffect(() => {
     ref.current.focus();
@@ -121,12 +135,12 @@ const UserInput = ({ users, refetch }) => {
             </Ul>
           )}
           {inputValue.length >= 3 && suggestions.length === 0 && (
-            <div>
-              There's no user {inputValue}.
+            <CreateNewUserMsj>
+              There's no user {inputValue}.<br/>
               <a onClick={createNewUser} href={"#"}>
                 Click here to create new user.
               </a>
-            </div>
+            </CreateNewUserMsj>
           )}
         </ResultsContainer>
       </InputContainer>
