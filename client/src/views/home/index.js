@@ -1,7 +1,6 @@
 import React from "react";
 import { useQuery } from "@apollo/react-hooks";
 import { GET_USERS } from "../../queries";
-import { Link } from "react-router-dom";
 import UserInput from "./UserInput";
 import styled from 'styled-components';
 
@@ -10,7 +9,7 @@ const Home = () => {
 
   const Container = styled.div`
      height: 100vh;
-     background: linear-gradient(0deg, rgba(250,215,120,1) 0%, rgba(251,240,226,1) 100%);
+     background: #F0AF3A;
   ` 
 
   if (!data) {

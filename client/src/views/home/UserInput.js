@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { CREATE_USER } from "../../queries";
 import { useMutation } from "@apollo/react-hooks";
 import styled from "styled-components/macro";
+import { Link } from "react-router-dom";
 
 const UserInput = ({ users, refetch }) => {
   const [inputValue, setInputValue] = useState("");
@@ -42,6 +43,16 @@ const UserInput = ({ users, refetch }) => {
     refetch();
   };
 
+  const InputContainer = styled.div`
+    width: 100%;
+    height: 80%;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    flex-direction: column;
+    position: relative;
+  `;
+
   const Input = styled.input`
     min-height: 100px;
     width: 40%;
@@ -50,6 +61,8 @@ const UserInput = ({ users, refetch }) => {
     background-color: #eab84b;
     border: 0;
     text-transform: uppercase;
+    text-align: center;
+    justify-self: end;
     &:focus {
       border: 0;
       outline-color: transparent;
@@ -59,31 +72,28 @@ const UserInput = ({ users, refetch }) => {
       text-transform: initial;
     }
   `;
-  const InputContainer = styled.div`
-    width: 100%;
-    height: 90%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex-direction: column;
-    position: relative;
+
+  const ResultsContainer = styled.div`
+    min-height: 290px;
+    width: 40%;
   `;
 
-    const Ul = styled.ul`
-      min-height: 300px;
-      display: flex;
-      align-items: baseline;
-    `
+  const Ul = styled.ul`
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-evenly;
+  `;
 
   const Li = styled.li`
     margin: 0 5%;
     padding: 5%;
     padding-top: 25%;
     background: #000;
-    color: #fff;
+    color: #f0af3a;
     font-size: 25px;
     writing-mode: vertical-rl;
     text-orientation: upright;
+    cursor: pointer;
   `;
 
   useEffect(() => {
@@ -100,21 +110,26 @@ const UserInput = ({ users, refetch }) => {
           ref={ref}
           placeholder={"Type to search user"}
         />
-        <Ul>
-          {suggestions.map(user => (
-            <Li key={user.id}>{user.name}</Li>
-          ))}
-        </Ul>
+        <ResultsContainer>
+          { !!suggestions.length && (
+            <Ul>
+              {suggestions.map(user => (
+                <Link to={`/user/${user.id}`}>
+                  <Li key={user.id}>{user.name}</Li>
+                </Link>
+              ))}
+            </Ul>
+          )}
+          {inputValue.length >= 3 && suggestions.length === 0 && (
+            <div>
+              There's no user {inputValue}.
+              <a onClick={createNewUser} href={"#"}>
+                Click here to create new user.
+              </a>
+            </div>
+          )}
+        </ResultsContainer>
       </InputContainer>
-
-      {inputValue.length >= 3 && suggestions.length === 0 && (
-        <div>
-          There's no user {inputValue}.{" "}
-          <a onClick={createNewUser} href={"#"}>
-            Create new user.
-          </a>
-        </div>
-      )}
     </>
   );
 };
