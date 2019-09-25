@@ -10,7 +10,7 @@ const Home = () => {
 
   const Container = styled.div`
      height: 100vh;
-     background: linear-gradient(0deg, rgba(230,178,35,1) 0%, rgba(255,141,10,1) 100%);
+     background: linear-gradient(0deg, rgba(250,215,120,1) 0%, rgba(251,240,226,1) 100%);
   ` 
 
   if (!data) {

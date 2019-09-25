@@ -1,17 +1,17 @@
 import React, { useState, useRef, useEffect } from "react";
 import { CREATE_USER } from "../../queries";
 import { useMutation } from "@apollo/react-hooks";
-import styled from 'styled-components';
+import styled from "styled-components/macro";
 
 const UserInput = ({ users, refetch }) => {
   const [inputValue, setInputValue] = useState("");
   const [suggestions, setSuggestions] = useState([]);
   const [createUser] = useMutation(CREATE_USER);
 
-  const ref = useRef()
+  const ref = useRef();
 
   const handleInputChange = e => {
-    const value  = e.target.value.toLowerCase().trim();
+    const value = e.target.value.toLowerCase().trim();
     setInputValue(value);
 
     //Return if the input is empty
@@ -54,24 +54,65 @@ const UserInput = ({ users, refetch }) => {
       border: 0;
       outline-color: transparent;
     }
-  `
+    &::placeholder {
+      font-size: 3rem;
+      text-transform: initial;
+    }
+  `;
+  const InputContainer = styled.div`
+    width: 100%;
+    height: 90%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    position: relative;
+  `;
 
-  useEffect(()=>{
+    const Ul = styled.ul`
+      min-height: 300px;
+      display: flex;
+      align-items: baseline;
+    `
+
+  const Li = styled.li`
+    margin: 0 5%;
+    padding: 5%;
+    padding-top: 25%;
+    background: #000;
+    color: #fff;
+    font-size: 25px;
+    writing-mode: vertical-rl;
+    text-orientation: upright;
+  `;
+
+  useEffect(() => {
     ref.current.focus();
-  })
+  });
 
   return (
     <>
-      <Input type={"text"} value={inputValue} onChange={handleInputChange} ref={ref} />
-      <ul>
-        {suggestions.map(user => (
-          <li key={user.id}>{user.name}</li>
-        ))}
-      </ul>
+      <InputContainer>
+        <Input
+          type={"text"}
+          value={inputValue}
+          onChange={handleInputChange}
+          ref={ref}
+          placeholder={"Type to search user"}
+        />
+        <Ul>
+          {suggestions.map(user => (
+            <Li key={user.id}>{user.name}</Li>
+          ))}
+        </Ul>
+      </InputContainer>
+
       {inputValue.length >= 3 && suggestions.length === 0 && (
         <div>
           There's no user {inputValue}.{" "}
-          <a onClick={createNewUser} href={'#'}>Create new user.</a>
+          <a onClick={createNewUser} href={"#"}>
+            Create new user.
+          </a>
         </div>
       )}
     </>
