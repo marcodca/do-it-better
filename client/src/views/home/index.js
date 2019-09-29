@@ -5,10 +5,11 @@ import UserInput from "./UserInput";
 import styled from "styled-components";
 
 const Home = () => {
-  const { data, loading, refetch } = useQuery(GET_USERS);
+  //Note: This component is not using subscriptions, but refetch instead, meaning this, that if a new user is added, the update wont happen in real time in other window.
+  const { data, refetch } = useQuery(GET_USERS);
 
   const Container = styled.div`
-    height: 100vh;
+    min-height: 100vh;
     background: rgb(240, 175, 58);
     background: radial-gradient(
       circle,
@@ -19,9 +20,6 @@ const Home = () => {
 
   if (!data) {
     return null;
-  }
-  if (loading) {
-    return <span>Loading ...</span>;
   }
 
   return (

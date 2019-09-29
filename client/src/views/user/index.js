@@ -1,8 +1,17 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import TaskDetails from "./TaskDetails";
 import CreateTaskForm from "./CreateTaskForm";
 import { useQuery } from "@apollo/react-hooks";
 import { GET_USER_TASKS, SUBSCRIBE_TO_USER_TASKS } from "../../queries";
+import styled from "styled-components";
+
+const selectShowInputOptions = [
+  "all",
+  "only not completed",
+  "newest first",
+  "oldest first",
+  "only completed"
+];
 
 const User = props => {
   const { id } = props.match.params;
@@ -11,6 +20,8 @@ const User = props => {
   const { loading, error, data, subscribeToMore } = useQuery(GET_USER_TASKS, {
     variables: { id }
   });
+
+  const [tasksToShow, setTasksToShow] = useState("all");
 
   useEffect(() => {
     subscribeToMore(
@@ -32,9 +43,43 @@ const User = props => {
   if (loading) return <p>Loading...</p>;
   if (error) return `Error! ${error}`;
 
+  const userTasks = (() => {
+    const { tasks } = data.user;
+
+    switch (tasksToShow) {
+      case "only not completed":
+        return tasks.filter(task => !task.completed);
+      case "newest first":
+        return tasks.sort((current, next) => current.created - next.created);
+      case "oldest first":
+        return tasks.sort((current, next) => next.created - current.created);
+      case "only completed":
+        return tasks.filter(task => task.completed);
+      default:
+        return tasks;
+    }
+  })();
+
   return (
-    <div>
-      {data.user.tasks.map(task => {
+    <Container>
+      <TopBar>
+        <div>
+          <label>Show:</label>
+          <SelectShowTasks
+            onChange={e => {
+              setTasksToShow(e.target.value);
+            }}
+          >
+            {selectShowInputOptions.map((option, index) => (
+              <option value={option} key={index}>
+                {option}
+              </option>
+            ))}
+          </SelectShowTasks>
+        </div>
+        <CreateTaskForm userId={id} />
+      </TopBar>
+      {userTasks.map(task => {
         const { id, title, completed, created } = task;
         return (
           <TaskDetails
@@ -46,9 +91,48 @@ const User = props => {
           />
         );
       })}
-      <CreateTaskForm userId={id} />
-    </div>
+    </Container>
   );
 };
+
+const Container = styled.div`
+  min-height: 100vh;
+  background: rgb(240, 175, 58);
+  background: radial-gradient(
+    circle,
+    rgba(240, 175, 58, 1) 0%,
+    rgba(219, 145, 13, 1) 100%
+  );
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  align-items: center;
+`;
+
+const TopBar = styled.div`
+  display: inline-flex;
+  justify-content: space-evenly;
+  align-items: center;
+  flex-wrap: wrap;
+  border: 2px solid #000;
+  border-radius: 5px;
+  font-size: 20px;
+  width: 50%;
+  padding: 2%;
+  background-color: rgba(256,256,256,0.1);
+`;
+
+const SelectShowTasks = styled.select`
+  background-color: #eab84b;
+  border: 0;
+  text-transform: uppercase;
+  text-align: center;
+  font-family: "Catamaran", sans-serif;
+  border: 0;
+  &:active {
+    border: 0;
+    outline-color: transparent;
+  }
+`;
 
 export default User;

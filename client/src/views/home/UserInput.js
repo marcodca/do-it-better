@@ -5,10 +5,17 @@ import styled from "styled-components/macro";
 import { Link } from "react-router-dom";
 
 const UserInput = ({ users, refetch }) => {
+
+  //input 
   const [inputValue, setInputValue] = useState("");
+
+  //state for storing user names suggestions giving the value of the input
   const [suggestions, setSuggestions] = useState([]);
+
+  //mutation
   const [createUser] = useMutation(CREATE_USER);
 
+  //A ref for the input
   const ref = useRef();
 
   const handleInputChange = e => {
@@ -43,9 +50,50 @@ const UserInput = ({ users, refetch }) => {
     refetch();
   };
 
+  //focus on the input (glitch was making it loose after each typing)
+  useEffect(() => {
+    ref.current.focus();
+  });
+
+  return (
+    <>
+      <InputContainer>
+        <Input
+          type={"text"}
+          value={inputValue}
+          onChange={handleInputChange}
+          ref={ref}
+          placeholder={"Type to search user"}
+        />
+        <ResultsContainer>
+          { !!suggestions.length && (
+            <Ul>
+              {suggestions.map(user => (
+                <Link to={`/user/${user.id}`}>
+                  <Li key={user.id}>{user.name}</Li>
+                </Link>
+              ))}
+            </Ul>
+          )}
+          {inputValue.length >= 3 && suggestions.length === 0 && (
+            <CreateNewUserMsj>
+              There's no user {inputValue}.<br/>
+              <a onClick={createNewUser} href={"#"}>
+                Click here to create new user.
+              </a>
+            </CreateNewUserMsj>
+          )}
+        </ResultsContainer>
+      </InputContainer>
+    </>
+  );
+};
+
+  //styled components
   const InputContainer = styled.div`
     width: 100%;
     height: 80%;
+    min-height: 500px;
     display: flex;
     justify-content: flex-end;
     align-items: center;
@@ -69,6 +117,7 @@ const UserInput = ({ users, refetch }) => {
       outline-color: transparent;
     }
     &::placeholder {
+      color: #b07711;
       font-size: 3rem;
       text-transform: initial;
     }
@@ -109,43 +158,5 @@ const UserInput = ({ users, refetch }) => {
       padding: 3px;
     }
   `
-
-  useEffect(() => {
-    ref.current.focus();
-  });
-
-  return (
-    <>
-      <InputContainer>
-        <Input
-          type={"text"}
-          value={inputValue}
-          onChange={handleInputChange}
-          ref={ref}
-          placeholder={"Type to search user"}
-        />
-        <ResultsContainer>
-          { !!suggestions.length && (
-            <Ul>
-              {suggestions.map(user => (
-                <Link to={`/user/${user.id}`}>
-                  <Li key={user.id}>{user.name}</Li>
-                </Link>
-              ))}
-            </Ul>
-          )}
-          {inputValue.length >= 3 && suggestions.length === 0 && (
-            <CreateNewUserMsj>
-              There's no user {inputValue}.<br/>
-              <a onClick={createNewUser} href={"#"}>
-                Click here to create new user.
-              </a>
-            </CreateNewUserMsj>
-          )}
-        </ResultsContainer>
-      </InputContainer>
-    </>
-  );
-};
 
 export default UserInput;
