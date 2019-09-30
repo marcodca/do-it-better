@@ -5,6 +5,7 @@ import { TOGGLE_TASK_COMPLETED } from "../../queries";
 import { SUBSCRIBE_TASK_COMPLETED_TOGGLED } from "../../queries";
 
 const TaskDetails = ({ id, title, completed, created, refetch }) => {
+  
   //This component is handling the subscriptions in a less elegant way: we use the useSubscription hook, and then conditionally rendering depending on if there's been an update in the relevant data
 
   //mutations

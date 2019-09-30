@@ -3,7 +3,7 @@ import TaskDetails from "./TaskDetails";
 import CreateTaskForm from "./CreateTaskForm";
 import { useQuery } from "@apollo/react-hooks";
 import { GET_USER_TASKS, SUBSCRIBE_TO_USER_TASKS } from "../../queries";
-import styled from "styled-components";
+import styled from "styled-components/macro";
 import Loading from "../../shared-components/Loading";
 
 const selectShowInputOptions = [
@@ -50,9 +50,9 @@ const User = props => {
     switch (tasksToShow) {
       case "only not completed":
         return tasks.filter(task => !task.completed);
-      case "newest first":
-        return tasks.sort((current, next) => current.created - next.created);
       case "oldest first":
+        return tasks.sort((current, next) => current.created - next.created);
+      case "newest first":
         return tasks.sort((current, next) => next.created - current.created);
       case "only completed":
         return tasks.filter(task => task.completed);
@@ -92,6 +92,13 @@ const User = props => {
           <CreateTaskForm userId={id} />
         </Actions>
       </TopBar>
+      {
+        userTasks.length <= 0 &&
+          <p css={`
+            font-size: 20px;
+            opacity: 0.7;
+          `}>No tasks yet.</p> 
+      }
       {userTasks.map(task => {
         const { id, title, completed, created } = task;
         return (
