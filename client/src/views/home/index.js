@@ -4,12 +4,12 @@ import { GET_USERS } from "../../queries";
 import UserInput from "./UserInput";
 import styled from "styled-components";
 
-const Home = () => {
+const Home = ({history}) => {
   //Note: This component is not using subscriptions, but refetch instead, meaning this, that if a new user is added, the update wont happen in real time in other window.
   const { data, refetch } = useQuery(GET_USERS);
 
   const Container = styled.div`
-    min-height: 100vh;
+    min-height: calc(100vh - 70px);
     background: rgb(240, 175, 58);
     background: radial-gradient(
       circle,
@@ -24,7 +24,7 @@ const Home = () => {
 
   return (
     <Container>
-      <UserInput users={data.users} refetch={refetch} />
+    <UserInput users={data.users} refetch={refetch} history={history}/>
     </Container>
   );
 };

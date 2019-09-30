@@ -63,7 +63,10 @@ const User = props => {
   return (
     <Container>
       <TopBar>
-        <div>
+        <Info>
+          <h1>{data.user.name}</h1>
+        </Info>
+        <Actions>
           <label>Show:</label>
           <SelectShowTasks
             onChange={e => {
@@ -76,8 +79,8 @@ const User = props => {
               </option>
             ))}
           </SelectShowTasks>
-        </div>
-        <CreateTaskForm userId={id} />
+          <CreateTaskForm userId={id} />
+        </Actions>
       </TopBar>
       {userTasks.map(task => {
         const { id, title, completed, created } = task;
@@ -110,16 +113,26 @@ const Container = styled.div`
 `;
 
 const TopBar = styled.div`
-  display: inline-flex;
-  justify-content: space-evenly;
-  align-items: center;
-  flex-wrap: wrap;
   border: 2px solid #000;
   border-radius: 5px;
   font-size: 20px;
   width: 50%;
+  background-color: rgba(256, 256, 256, 0.1);
+`;
+
+const Info = styled.div`
+  width: 100%;
+  display: flexbox;
+  justify-content: space-around;
   padding: 2%;
-  background-color: rgba(256,256,256,0.1);
+`;
+
+const Actions = styled.div`
+  display: flexbox;
+  justify-content: space-evenly;
+  align-items: center;
+  flex-wrap: wrap;
+  padding: 2%;
 `;
 
 const SelectShowTasks = styled.select`
