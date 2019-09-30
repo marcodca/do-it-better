@@ -142,7 +142,7 @@ const Input = styled.input`
 const NumberUsersMsg = styled.p`
   display: inline-block;
   width: 30%;
-  min-width: 200px;
+  min-width: 270px;
   color: #fff;
   background-color: #000;
   position: absolute;

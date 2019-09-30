@@ -18,11 +18,7 @@ const Home = ({ history }) => {
       rgba(219, 145, 13, 1) 100%
     );
   `;
-
-  if (!data) {
-    return null;
-  }
-
+  
   return (
     <Container>
       {loading ? (
