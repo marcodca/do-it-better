@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { CREATE_USER } from "../../queries";
 import { useMutation } from "@apollo/react-hooks";
 import styled from "styled-components/macro";
+import { animated, useTransition } from "react-spring";
 import { Link } from "react-router-dom";
 
 const UserInput = ({ users, refetch, history }) => {
@@ -17,7 +18,7 @@ const UserInput = ({ users, refetch, history }) => {
   const handleInputChange = e => {
     let value = e.target.value.toLowerCase().trim();
 
-    //limit the length 
+    //limit the length
     value = value.length >= 10 ? value.substring(0, 10) : value;
     setInputValue(value);
 
@@ -60,7 +61,23 @@ const UserInput = ({ users, refetch, history }) => {
 
   const NumberUsers = users ? users.length : null;
 
-  console.log(NumberUsers);
+  //Animations
+  const SuggestionsTransition = useTransition(
+    suggestions,
+    suggestion => suggestion.id,
+    {
+      from: { transform: `translateY(-30%)`, opacity: 0 },
+      enter: { transform: `translateY(0)`, opacity: 1 },
+      leave: { transform: `translateY(-30%)`, opacity: 0 },
+      config: { duration: 600 }
+    }
+  );
+
+  const NewUserMsgTransition = useTransition(suggestions.length === 0, null, {
+    from: { opacity: 0 },
+    enter: { opacity: 1 },
+    leave: { opacity: 0 }
+  });
 
   return (
     <>
@@ -81,21 +98,27 @@ const UserInput = ({ users, refetch, history }) => {
         <ResultsContainer>
           {!!suggestions.length && (
             <Ul>
-              {suggestions.map(user => (
-                <Link to={`/user/${user.id}`}>
-                  <Li key={user.id}>{user.name}</Li>
-                </Link>
+              {SuggestionsTransition.map(({ item, key, props }) => (
+                <animated.div style={props} key={key}>
+                  <Link to={`/user/${item.id}`}>
+                    <Li key={item.id}>{item.name}</Li>
+                  </Link>
+                </animated.div>
               ))}
             </Ul>
           )}
-          {inputValue.length >= 3 && suggestions.length === 0 && (
-            <CreateNewUserMsj>
-              There's no user {inputValue}.<br />
-              <a onClick={createNewUser} href={"#"}>
-                Click here to create new user.
-              </a>
-            </CreateNewUserMsj>
-          )}
+          {inputValue.length >= 3 &&
+            NewUserMsgTransition.map(
+              ({ item, key, props }) =>
+                item && (
+                  <CreateNewUserMsj style={props}>
+                    There's no user {inputValue}.<br />
+                    <a onClick={createNewUser} href={"#"}>
+                      Click here to create new user.
+                    </a>
+                  </CreateNewUserMsj>
+                )
+            )}
         </ResultsContainer>
       </InputContainer>
     </>
@@ -176,7 +199,7 @@ const Li = styled.li`
   cursor: pointer;
 `;
 
-const CreateNewUserMsj = styled.div`
+const CreateNewUserMsj = styled(animated.div)`
   font-size: 25px;
   margin-top: 10%;
   line-height: 30px;
