@@ -9,6 +9,8 @@ const Home = ({ history }) => {
   //Note: This component is not using subscriptions, but refetch instead, meaning this, that if a new user is added, the update wont happen in real time in other window.
   const { data, loading, refetch } = useQuery(GET_USERS);
 
+  if (loading) return <Loading/>  
+
   const Container = styled.div`
     min-height: 100vh;
     background: rgb(240, 175, 58);
@@ -21,11 +23,7 @@ const Home = ({ history }) => {
   
   return (
     <Container>
-      {loading ? (
-        <Loading />
-      ) : (
         <UserInput users={data.users} refetch={refetch} history={history} />
-      )}
     </Container>
   );
 };

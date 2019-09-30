@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { CREATE_USER } from "../../queries";
 import { useMutation } from "@apollo/react-hooks";
 import styled from "styled-components/macro";
-import { animated, useTransition } from "react-spring";
+import { animated, useTransition, useSpring } from "react-spring";
 import { Link } from "react-router-dom";
 
 const UserInput = ({ users, refetch, history }) => {
@@ -79,11 +79,13 @@ const UserInput = ({ users, refetch, history }) => {
     leave: { opacity: 0 }
   });
 
+  const NumberUsersAnimation = useSpring({transform: `translateY(0)`, from: {transform: `translateY(100%)`}, delay: 1200})
+
   return (
     <>
       <InputContainer>
         {NumberUsers && (
-          <NumberUsersMsg>
+          <NumberUsersMsg style={NumberUsersAnimation}>
             There are currently {NumberUsers} users created.{" "}
           </NumberUsersMsg>
         )}
@@ -162,7 +164,7 @@ const Input = styled.input`
   }
 `;
 
-const NumberUsersMsg = styled.p`
+const NumberUsersMsg = styled(animated.p)`
   display: inline-block;
   width: 30%;
   min-width: 270px;

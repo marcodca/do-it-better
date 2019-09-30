@@ -20,10 +20,16 @@ const Loading = () => {
   );
 };
 const Container = styled.div`
-  height: 60vh;
+  height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
+  background: rgb(240, 175, 58);
+  background: radial-gradient(
+    circle,
+    rgba(240, 175, 58, 1) 0%,
+    rgba(219, 145, 13, 1) 100%
+  );
 `;
 const Text = styled(animated.p)`
   font-family: "Pacifico";

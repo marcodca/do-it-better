@@ -4,6 +4,7 @@ import CreateTaskForm from "./CreateTaskForm";
 import { useQuery } from "@apollo/react-hooks";
 import { GET_USER_TASKS, SUBSCRIBE_TO_USER_TASKS } from "../../queries";
 import styled from "styled-components";
+import Loading from "../../shared-components/Loading";
 
 const selectShowInputOptions = [
   "all",
@@ -40,7 +41,7 @@ const User = props => {
     );
   });
 
-  if (loading) return <p>Loading...</p>;
+  if (loading) return <Loading />;
   if (error) return `Error! ${error}`;
 
   const userTasks = (() => {
@@ -65,20 +66,30 @@ const User = props => {
       <TopBar>
         <Info>
           <h1>{data.user.name}</h1>
+          <p>
+            Total tasks:
+            <span>{data.user.tasks.length}</span>
+          </p>
+          <p>
+            Completed tasks:
+            <span>{data.user.tasks.filter(task => task.completed).length}</span>
+          </p>
         </Info>
         <Actions>
-          <label>Show:</label>
-          <SelectShowTasks
-            onChange={e => {
-              setTasksToShow(e.target.value);
-            }}
-          >
-            {selectShowInputOptions.map((option, index) => (
-              <option value={option} key={index}>
-                {option}
-              </option>
-            ))}
-          </SelectShowTasks>
+          <div>
+            <label>Show:</label>
+            <SelectShowTasks
+              onChange={e => {
+                setTasksToShow(e.target.value);
+              }}
+            >
+              {selectShowInputOptions.map((option, index) => (
+                <option value={option} key={index}>
+                  {option}
+                </option>
+              ))}
+            </SelectShowTasks>
+          </div>
           <CreateTaskForm userId={id} />
         </Actions>
       </TopBar>
@@ -99,7 +110,8 @@ const User = props => {
 };
 
 const Container = styled.div`
-  min-height: 100vh;
+  min-height: 90vh;
+  margin-top: 10vh;
   background: rgb(240, 175, 58);
   background: radial-gradient(
     circle,
@@ -108,28 +120,46 @@ const Container = styled.div`
   );
   display: flex;
   flex-direction: column;
-  justify-content: space-around;
+  justify-content: flex-start;
   align-items: center;
 `;
 
 const TopBar = styled.div`
-  border: 2px solid #000;
   border-radius: 5px;
   font-size: 20px;
+  margin: 15px;
   width: 50%;
+  min-width: 685px;
   background-color: rgba(256, 256, 256, 0.1);
 `;
 
 const Info = styled.div`
   width: 100%;
-  display: flexbox;
+  display: flex;
   justify-content: space-around;
+  align-items: flex-end;
   padding: 2%;
+  h1 {
+    text-transform: capitalize;
+    font-size: 48px;
+    color: #fff;
+    background: #000;
+    padding: 3px;
+  }
+  p {
+    font-size: 25px;
+  }
+  span {
+    color: #fff;
+    background: #000;
+    padding: 0px 8px;
+  }
 `;
 
 const Actions = styled.div`
-  display: flexbox;
-  justify-content: space-evenly;
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
   align-items: center;
   flex-wrap: wrap;
   padding: 2%;
