@@ -8,7 +8,9 @@ const CreateFormTask = ({ userId }) => {
   const [createTask] = useMutation(CREATE_TASK);
 
   const handleTitleInputChange = e => {
-    setTitleInput(e.target.value);
+    let {value} = e.target;
+    value = value.length <= 25 ? value : value.substring(0, 25); 
+    setTitleInput(value);
   };
 
   const handleFormSubmit = e => {

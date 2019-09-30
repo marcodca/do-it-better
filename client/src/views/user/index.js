@@ -18,7 +18,7 @@ const User = props => {
   const { id } = props.match.params;
 
   //The re-fetching in this component is made with the subscribeToMore of the useQuery api. It is triggered when the useEffect runs after the component is mounted.
-  const { loading, error, data, subscribeToMore } = useQuery(GET_USER_TASKS, {
+  const { loading, error, data, subscribeToMore, refetch } = useQuery(GET_USER_TASKS, {
     variables: { id }
   });
 
@@ -60,7 +60,6 @@ const User = props => {
         return tasks;
     }
   })();
-
   return (
     <Container>
       <TopBar>
@@ -102,6 +101,7 @@ const User = props => {
             title={title}
             completed={completed}
             created={created}
+            refetch={refetch}
           />
         );
       })}
