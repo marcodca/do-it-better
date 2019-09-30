@@ -17,6 +17,7 @@
     "express": "^4.16.4",
     "graphql": "^14.0.2",
     "mongoose": "^5.7.1",
+    "react-spring": "^8.0.27",
     "subscriptions-transport-ws": "^0.9.15"
   },
   "devDependencies": {

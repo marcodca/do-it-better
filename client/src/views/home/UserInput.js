@@ -15,7 +15,10 @@ const UserInput = ({ users, refetch, history }) => {
   const ref = useRef();
 
   const handleInputChange = e => {
-    const value = e.target.value.toLowerCase().trim();
+    let value = e.target.value.toLowerCase().trim();
+
+    //limit the length 
+    value = value.length >= 10 ? value.substring(0, 10) : value;
     setInputValue(value);
 
     //Return if the input is empty
@@ -52,7 +55,6 @@ const UserInput = ({ users, refetch, history }) => {
     const newUser = await createUser({ variables: { name: inputValue } });
     setInputValue("");
     refetch();
-    // console.log(newUser.data.createUser.id)
     history.push(`/user/${newUser.data.createUser.id}`);
   };
 

@@ -1,15 +1,16 @@
 import React from "react";
 import { useQuery } from "@apollo/react-hooks";
 import { GET_USERS } from "../../queries";
+import Loading from "../../shared-components/Loading";
 import UserInput from "./UserInput";
 import styled from "styled-components";
 
-const Home = ({history}) => {
+const Home = ({ history }) => {
   //Note: This component is not using subscriptions, but refetch instead, meaning this, that if a new user is added, the update wont happen in real time in other window.
-  const { data, refetch } = useQuery(GET_USERS);
+  const { data, loading, refetch } = useQuery(GET_USERS);
 
   const Container = styled.div`
-    min-height: calc(100vh - 70px);
+    min-height: 100vh;
     background: rgb(240, 175, 58);
     background: radial-gradient(
       circle,
@@ -24,7 +25,11 @@ const Home = ({history}) => {
 
   return (
     <Container>
-    <UserInput users={data.users} refetch={refetch} history={history}/>
+      {loading ? (
+        <Loading />
+      ) : (
+        <UserInput users={data.users} refetch={refetch} history={history} />
+      )}
     </Container>
   );
 };

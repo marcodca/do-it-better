@@ -4,7 +4,7 @@ import Home from './views/home';
 import User from './views/user';
 import Notfound from './views/notFound';
 import GlobalStyle from './GlobalStyle';
-import styled from 'styled-components/macro';
+import Appbar from './shared-components/Appbar';
 
 const Routes = () => {
   return (
@@ -26,14 +26,7 @@ const Routes = () => {
   );
 };
 
-const Appbar = styled.div`
-  height: 70px;
-  position: fixed;
-  left: 0;
-  right: 0;
-  top: 0;
-  background-color: #ed673b;
-`
+
 
 
 
