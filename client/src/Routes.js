@@ -5,6 +5,7 @@ import User from './views/user';
 import Notfound from './views/notFound';
 import GlobalStyle from './GlobalStyle';
 import Appbar from './shared-components/Appbar';
+// eslint-disable-next-line
 import styled from 'styled-components/macro';
 
 const Routes = () => {

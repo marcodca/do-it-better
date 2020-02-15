@@ -6,6 +6,8 @@ const cors = require("cors");
 const server = require("./schema");
 const User = require("./models/user");
 const Task = require("./models/task");
+const {request} = require('graphql-request')
+ 
 
 const port = process.env.PORT || 4000;
 const isProduction = process.env.NODE_ENV === "production";
@@ -20,10 +22,12 @@ mongoose.connection.once("open", () => {
   console.log("connected to database");
 });
 
+
 const app = express();
 
 //cross origin requests
 app.use(cors());
+
 
 //graphql
 server.applyMiddleware({ app, path: "/graphql" });
@@ -50,6 +54,21 @@ if (isProduction) {
     res.sendFile(path.join(__dirname, "../client/build", "index.html"));
   });
 }
+
+const query = `mutation {
+  createTask(
+    title: "testing nowww again in loop!"
+    userId: "5d8a2c05212dc717c83b8e71"
+  ) {
+    title
+    userId
+    created
+  }
+}`
+
+setInterval(()=>{
+  request('http://localhost:4000/graphql', query).then(data => console.log(data))
+},3000)
 
 httpServer.listen(port, () => {
   console.log(`Apollo server on port ${port}`);

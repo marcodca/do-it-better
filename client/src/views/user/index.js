@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import TaskDetails from "./TaskDetails";
+import TaskCard from "./TaskCard";
 import CreateTaskForm from "./CreateTaskForm";
 import { useQuery } from "@apollo/react-hooks";
 import { GET_USER_TASKS, SUBSCRIBE_TO_USER_TASKS } from "../../queries";
@@ -102,7 +102,7 @@ const User = props => {
       {userTasks.map(task => {
         const { id, title, completed, created } = task;
         return (
-          <TaskDetails
+          <TaskCard
             key={id}
             id={id}
             title={title}

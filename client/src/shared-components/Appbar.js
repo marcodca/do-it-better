@@ -11,6 +11,7 @@ const Bar = styled(animated.div)`
   top: 0;
   background-color: #ed673b;
   z-index: 10;
+  box-shadow: -2px 10px 26px -8px rgba(0,0,0,0.75);
   will-change: height;
 `;
 
@@ -27,6 +28,7 @@ const Logo = styled(animated.div)`
   height: 75px;
   background: inherit;
   border-radius: 50%;
+  box-shadow: 0px 24px 16px -15px rgba(0,0,0,0.75);
   span {
     font-size: 30px;
   }

@@ -3,8 +3,9 @@ import { useMutation, useSubscription } from "@apollo/react-hooks";
 import { DELETE_TASK } from "../../queries";
 import { TOGGLE_TASK_COMPLETED } from "../../queries";
 import { SUBSCRIBE_TASK_COMPLETED_TOGGLED } from "../../queries";
+import styled from 'styled-components'
 
-const TaskDetails = ({ id, title, completed, created, refetch }) => {
+const TaskCard = ({ id, title, completed, created, refetch }) => {
   
   //This component is handling the subscriptions in a less elegant way: we use the useSubscription hook, and then conditionally rendering depending on if there's been an update in the relevant data
 
@@ -30,7 +31,7 @@ const TaskDetails = ({ id, title, completed, created, refetch }) => {
     : completed;
 
   return (
-    <div>
+    <Container>
       <p>Title: {title}</p>
       <p>Completed: {String(latestCompleted)}</p>
       <p>Created: {new Date(Number(created)).toLocaleString()}</p>
@@ -50,8 +51,19 @@ const TaskDetails = ({ id, title, completed, created, refetch }) => {
       >
         delete task
       </button>
-    </div>
+    </Container>
   );
 };
 
-export default TaskDetails;
+const Container = styled.div`
+  width: 66%;
+  min-width: 300px;
+  background: red;
+  margin: 15px;
+  padding: 10px;
+  display: grid;
+  grid-template-rows: 1fr 5fr 1fr;
+  grid-template-columns: 1fr 1fr;
+`
+
+export default TaskCard;
