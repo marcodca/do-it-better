@@ -46,7 +46,7 @@ const TaskCard = ({ id, title, completed, created, refetch }) => {
 
   return (
     <Container
-      completed={latestCompleted}
+      isCompleted={latestCompleted}
       onMouseMove={({ clientX: x, clientY: y }) => set({ xys: calc(x, y) })}
       onMouseLeave={() => set({ xys: [0, 0, 1] })}
       style={{ transform: props.xys.interpolate(trans) }}
@@ -81,7 +81,7 @@ const Container = styled(animated.div)`
   max-width: 400px;
   height: 150px;
   background: ${props =>
-    props.completed ? "rgba(96, 196, 128, 0.6)" : "rgb(255 255 255 / 0.6)"};
+    props.isCompleted ? "rgba(96, 196, 128, 0.6)" : "rgb(255 255 255 / 0.6)"};
   margin: 15px;
   padding: 10px;
   display: flex;
@@ -104,6 +104,7 @@ const Container = styled(animated.div)`
       background: #989b37;
       border-radius: 5px;
       cursor: pointer;
+      box-shadow: 0px 2px 4px 2px rgba(0, 0, 0, 0.5);
     }
   }
 `;

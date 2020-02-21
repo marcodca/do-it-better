@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import TaskCard from "./TaskCard";
 import CreateTaskForm from "./CreateTaskForm";
+import PopUpMessage from './PopUpMessage';
 import { useQuery } from "@apollo/react-hooks";
 import { GET_USER_TASKS, SUBSCRIBE_TO_USER_TASKS } from "../../queries";
 import styled from "styled-components/macro";
@@ -113,6 +114,7 @@ const User = props => {
           />
         );
       })}
+      <PopUpMessage/>
     </Container>
   );
 };
