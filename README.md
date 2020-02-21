@@ -38,5 +38,3 @@ npm start
 
 ## Acknowledgments
 Everybody was doing a to-do's app, I just wanted to be popular!!! This project is in deed my version of, apparently, a must-have in every developers curriculum. It was also a great chance to play around with graphQL with Apollo (server and client), and especially to work with such a neat feature like graphQL subscriptions. The back-end of the project is done with express, the already mentioned Apollo server, and mongoDB for the database, connected with mongoose. On the front-end I used React, routing with react-router, Apollo-client, styled-components and some animations with react-spring.
-
-Note: The general structure of the app is done, but I still need to work on the styling and the responsiveness of it.           
