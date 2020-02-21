@@ -5,6 +5,7 @@ import { useQuery } from "@apollo/react-hooks";
 import { GET_USER_TASKS, SUBSCRIBE_TO_USER_TASKS } from "../../queries";
 import styled from "styled-components/macro";
 import Loading from "../../shared-components/Loading";
+import media from '../../mediaHelper';
 
 const selectShowInputOptions = [
   "all",
@@ -134,9 +135,9 @@ const Container = styled.div`
 const TopBar = styled.div`
   border-radius: 5px;
   font-size: 20px;
-  margin: 15px;
-  width: 50%;
-  min-width: 685px;
+  margin: 45px 15px;
+  width: 90%;
+  ${media.md`width: 50%;`}
   background-color: rgba(256, 256, 256, 0.1);
 `;
 
@@ -146,20 +147,29 @@ const Info = styled.div`
   justify-content: space-around;
   align-items: flex-end;
   padding: 2%;
+  font-size: 30px;
+  > * {
+    margin: 10px;
+  }
+  ${media.md`font-size: 48px;`}
   h1 {
     text-transform: capitalize;
-    font-size: 48px;
+    font-size: 1em;
     color: #fff;
     background: #000;
     padding: 3px;
+    border-radius: 2px;
   }
   p {
-    font-size: 25px;
+    font-size: 0.5em;
   }
   span {
     color: #fff;
     background: #000;
     padding: 0px 8px;
+    margin: 2px;
+    display: inline-block;
+    border-radius: 2px;
   }
 `;
 
